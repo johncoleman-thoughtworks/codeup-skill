@@ -1,0 +1,19 @@
+{
+  "name": "codeup",
+  "description": "Architectural anti-pattern review. Scans code against Codeup's 107-pattern catalogue (god class, anemic domain model, primitive obsession, exception-handling smells, and 10 code-security patterns) and writes findings as .codeup/ YAML, using the host's own model — no API key, nothing compiled.",
+  "version": "0.1.0",
+  "author": {
+    "name": "John Coleman"
+  },
+  "homepage": "https://github.com/johncoleman-thoughtworks/codeup-skill",
+  "repository": "https://github.com/johncoleman-thoughtworks/codeup-skill",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "anti-patterns",
+    "architecture",
+    "code-smells",
+    "security",
+    "static-analysis"
+  ]
+}
