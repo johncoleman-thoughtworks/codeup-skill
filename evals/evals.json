@@ -1,0 +1,23 @@
+{
+  "skill_name": "codeup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run /codeup on evals/files/order_service.py — review it for architectural anti-patterns and write the findings.",
+      "expected_output": "Findings written to .codeup/findings/*.yaml mapping to real catalogue patterns — should catch the long process() method, magic numbers (tax/discount/shipping constants), primitive-obsession (tier as int, money as float, country as string), and likely anemic-domain-model on Order. Each finding valid per schema.md (quoted timestamp, category in catalogue, stable id).",
+      "files": ["evals/files/order_service.py"]
+    },
+    {
+      "id": 2,
+      "prompt": "Use codeup to do a security-focused anti-pattern review of evals/files/file_handler.js and save the findings.",
+      "expected_output": "Findings covering resource-locator-path-traversal (path.join with unsanitized req.query.name) and unsafe deserialization / untrusted-input-in-interpreting-context (eval of client blob), both severity high. Valid .codeup/findings/*.yaml files.",
+      "files": ["evals/files/file_handler.js"]
+    },
+    {
+      "id": 3,
+      "prompt": "review evals/files/money.py for code smells with codeup",
+      "expected_output": "A well-factored value object — the skill should report few or no findings and must NOT pad with stylistic nitpicks. Tests that the skill defaults to not-reporting on clean code.",
+      "files": ["evals/files/money.py"]
+    }
+  ]
+}

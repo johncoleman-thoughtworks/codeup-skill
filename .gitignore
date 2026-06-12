@@ -1,0 +1,7 @@
+# Skill-creator eval workspaces (regenerable)
+codeup-workspace/
+*-workspace/
+.DS_Store
+
+# JetBrains IDE
+.idea/

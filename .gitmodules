@@ -1,0 +1,3 @@
+[submodule "vendor/codeup-cli"]
+	path = vendor/codeup-cli
+	url = https://github.com/johncoleman-thoughtworks/codeup-cli.git
