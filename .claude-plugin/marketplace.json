@@ -9,7 +9,7 @@
       "name": "codeup",
       "source": "./plugins/codeup",
       "description": "Architectural anti-pattern review against Codeup's 107-pattern catalogue, using the host's own model — no API key, nothing compiled.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "code-quality",
       "keywords": [
         "code-review",
