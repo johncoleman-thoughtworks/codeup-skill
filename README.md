@@ -20,7 +20,7 @@ it's configuration the host loads.
 | Codeup VS Code extension | `.vsix` | Anthropic / Copilot | in-editor, persistent panel |
 
 All three read and write the **same `.codeup/` files** (see
-[`references/schema.md`](references/schema.md)) and the **same catalogue** — so
+[`schema.md`](plugins/codeup/skills/codeup/references/schema.md)) and the **same catalogue** — so
 findings agree regardless of which produced them.
 
 ## Install
@@ -41,8 +41,23 @@ This repo is also its own Claude Code plugin **marketplace**:
 /plugin install codeup@codeup-tools
 ```
 
+Then **restart `claude`** (quit and relaunch). This matters: plugin **skills
+bind at startup**, so `/reload-plugins` alone loads the hook but *not* the
+skill — only a restart does. After relaunch, `/plugin details codeup` should
+list both `Skills: codeup` and `Hooks: PostToolUse`.
+
 Invoked as `/codeup:codeup` (plugin skills are namespaced `plugin:skill`).
-Update later with `/plugin marketplace update codeup-tools`.
+
+**Updating to a new version:**
+
+```text
+/plugin marketplace update codeup-tools
+/plugin update codeup@codeup-tools
+```
+
+…then **restart `claude`** again. The plugin cache is keyed by *version*, so an
+update only takes effect cleanly when the version bumps and the session
+restarts — reloading in place can keep serving the old cached skill.
 
 ### Option B — copy the skill (bare `/codeup`, zero tooling)
 
