@@ -1,22 +1,19 @@
 ---
 name: codeup
 description: >-
-  Reviews source code for architectural anti-patterns and code smells against
-  the 107-pattern Codeup catalogue (god class, anemic domain model, primitive
-  obsession, long methods, deep nesting, feature envy, leaky abstractions,
-  exception-handling smells, and 10 code-security patterns like untrusted input
-  in interpreting contexts, path traversal, and unsafe deserialization), then
-  writes findings as `.codeup/findings/*.yaml` files that travel with the repo.
-  Use this skill whenever the user wants an architecture review, a code-smell
-  scan, an anti-pattern audit, a design-quality or maintainability review, or a
-  security-smell pass — and whenever they type `/codeup`, mention "codeup", or
-  ask you to "review this code", "find anti-patterns", "check for code smells",
-  or "audit the design" of a file, directory, or the current selection. ALSO use
-  it whenever you are **fixing** Codeup findings or writing/changing code that
-  should clear the catalogue: it carries a self-verification loop so a fix can't
-  silently trade one anti-pattern for another — hold your own diff to the
-  catalogue before declaring a fix done. Reuses THIS host's model — no API key,
-  no separate install.
+  Reviews and fixes source code against the 107-pattern Codeup catalogue of
+  architectural anti-patterns and code smells — god class, anemic domain model,
+  primitive obsession, long methods, feature envy, leaky abstractions,
+  exception-handling smells, and 10 code-security patterns (untrusted input in
+  interpreting contexts, path traversal, unsafe deserialization, and more) —
+  writing findings as .codeup/findings/*.yaml that travel with the repo. Use
+  whenever the user wants an architecture review, code-smell scan, anti-pattern
+  or design-quality audit, or security-smell pass; types /codeup or mentions
+  "codeup"; or asks to "review this code", "find anti-patterns", "check for code
+  smells", or "audit the design" of a file, directory, or selection. ALSO use
+  when fixing findings or writing code that must clear the catalogue — it runs a
+  self-verification loop so a fix can't silently trade one anti-pattern for
+  another. Reuses THIS host's model — no API key, no install.
 ---
 
 # Codeup — architectural anti-pattern review
