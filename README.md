@@ -46,12 +46,12 @@ Update later with `/plugin marketplace update codeup-tools`.
 
 ### Option B — copy the skill (bare `/codeup`, zero tooling)
 
-The installable skill is the **`skills/codeup/` directory only** (112 KB —
+The installable skill is the **`plugins/codeup/skills/codeup/` directory only** (112 KB —
 `SKILL.md` + `references/`). Copy it into a skills directory:
 
 ```bash
-cp -R skills/codeup /path/to/your-repo/.claude/skills/codeup   # project (team-wide)
-cp -R skills/codeup ~/.claude/skills/codeup                    # personal (all projects)
+cp -R plugins/codeup/skills/codeup /path/to/your-repo/.claude/skills/codeup   # project (team-wide)
+cp -R plugins/codeup/skills/codeup ~/.claude/skills/codeup                    # personal (all projects)
 ```
 
 Committing it into a repo gives the whole team `/codeup` with nothing to
@@ -92,7 +92,7 @@ into your repo's `.github/prompts/`. Invoke it from Copilot Chat.
 The catalogue and schema are **never hand-edited here** — they're copied
 byte-for-byte from `codeup-cli` at a pinned version so the skill can't drift
 from the CLI/extension. The pinned source lives as a git submodule under
-`vendor/codeup-cli` (dev-only — it is *outside* the shippable `skill/` dir).
+`vendor/codeup-cli` (dev-only — it is *outside* the shippable `plugins/codeup/` dir).
 
 ```bash
 git clone --recurse-submodules <this repo>
@@ -102,34 +102,40 @@ git submodule update --init
 # To bump to a newer catalogue:
 git -C vendor/codeup-cli fetch --tags
 git -C vendor/codeup-cli checkout vX.Y.Z
-./scripts/sync-from-core.sh          # regenerates skills/codeup/references/, updates .pinned-version
-git add vendor/codeup-cli skills/codeup/references/ skills/codeup/.pinned-version
+./scripts/sync-from-core.sh          # regenerates plugins/codeup/skills/codeup/references/
+git add vendor/codeup-cli plugins/codeup/skills/codeup/references/ plugins/codeup/skills/codeup/.pinned-version
 git commit -m "sync catalogue from codeup-cli vX.Y.Z"
 ```
 
-`skills/codeup/.pinned-version` records the tag, commit, pattern count, and
+`plugins/codeup/skills/codeup/.pinned-version` records the tag, commit, pattern count, and
 SHA-256 of each generated reference file — the provenance is auditable and
 tamper-evident.
 
 ## Layout
 
-The repo separates the **installable skill** from the **dev tooling** that
-maintains it. Only `skills/codeup/` ever ships to a user; the `.claude-plugin/`
-manifests make the same repo installable as a plugin from its own marketplace.
+The repo is a **marketplace** (root `.claude-plugin/marketplace.json`) holding
+one **plugin** in its own subdirectory (`plugins/codeup/`, canonical layout).
+Only `plugins/codeup/` ships to a user; everything else is dev tooling.
 
 ```
 .claude-plugin/
-  plugin.json               # plugin manifest (makes this repo a plugin)
-  marketplace.json          # marketplace catalog (lists the plugin)
-skills/                     # ← Claude Code plugin skills dir
-  codeup/                   #   ← THE INSTALLABLE SKILL (copy only this for Option B)
-    SKILL.md                #      the /codeup workflow
-    references/
-      catalogue.yaml        #      GENERATED — 107 patterns, verbatim from codeup-core
-      schema.md             #      GENERATED — the .codeup/ contract, verbatim
-    .pinned-version         #      provenance + checksums of references/
+  marketplace.json          # marketplace catalog (lists the plugin + its path)
+plugins/
+  codeup/                   # ← THE PLUGIN (this whole dir is what installs)
+    .claude-plugin/
+      plugin.json           #   plugin manifest
+    skills/
+      codeup/               #   ← the skill (copy only THIS dir for Option B)
+        SKILL.md            #      the /codeup workflow + fix-and-verify loop
+        references/
+          catalogue.yaml    #      GENERATED — 107 patterns, verbatim from codeup-core
+          schema.md         #      GENERATED — the .codeup/ contract, verbatim
+        .pinned-version     #      provenance + checksums of references/
+    hooks/
+      hooks.json            #   PostToolUse auto-verify hook (plugin-only)
+      verify-fix.sh
 copilot/codeup.prompt.md    # Copilot parity (ships separately into .github/prompts/)
-scripts/sync-from-core.sh   # regenerates skills/codeup/references/ from the pinned submodule
+scripts/sync-from-core.sh   # regenerates the skill's references/ from the submodule
 LICENSE                     # MIT
 vendor/codeup-cli           # submodule, pinned — DEV ONLY, not needed at runtime
 evals/evals.json            # skill-creator test prompts — DEV ONLY
