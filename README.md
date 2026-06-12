@@ -23,6 +23,33 @@ All three read and write the **same `.codeup/` files** (see
 [`schema.md`](plugins/codeup/skills/codeup/references/schema.md)) and the **same catalogue** — so
 findings agree regardless of which produced them.
 
+## What codeup targets — and what to pair it with
+
+codeup works at **design altitude**: it flags *architectural anti-patterns and
+code smells* — the structural causes of trouble (god class, anemic domain
+model, primitive obsession, leaky abstractions, layer violations, the
+code-security patterns, etc.). It deliberately does **not** hunt line-level
+**correctness bugs** — null dereferences / NPEs, off-by-ones, race conditions,
+unhandled edge cases, resource leaks. Those are runtime-behaviour defects, a
+different kind of analysis, and codeup will *not* report them (a finding must
+map to a catalogue pattern, so it never invents bug-level categories).
+
+**Use `/code-review` alongside codeup, not instead of it.** They cover
+different layers and complement each other:
+
+| | **codeup** | **`/code-review`** |
+|---|---|---|
+| Altitude | design / structure (the *cause*) | correctness (the *symptom*) |
+| Scope | whole files vs. the 107-pattern catalogue | the current **diff** (your changes) |
+| Catches | anti-patterns, design + security smells | NPEs, logic bugs, edge cases, plus reuse/efficiency cleanups |
+| Output | `.codeup/findings/*.yaml` that travel with the repo | findings in-session (or inline PR comments / `--fix`) |
+
+Example of the split: codeup flags that a service *returns `null` on miss*
+(a design smell — switch to `Optional`/`Result`/a domain exception);
+`/code-review` flags that a specific caller *dereferences that result
+unguarded* (a live NPE in your diff). Run codeup for the architecture review,
+and `/code-review` (and `/security-review`) before merging changes.
+
 ## Install
 
 There are two ways to install — a one-command **plugin** install, or a manual
