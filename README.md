@@ -27,7 +27,10 @@ findings agree regardless of which produced them.
 
 There are two ways to install — a one-command **plugin** install, or a manual
 **copy** of the skill directory. Both deliver the same skill; pick based on
-whether you want versioned updates (plugin) or a bare `/codeup` command (copy).
+whether you want versioned updates **plus the automatic fix-verification hook**
+(plugin) or a bare `/codeup` command (copy). See
+[Automatic fix verification](#automatic-fix-verification-plugin-only) for what
+only the plugin route gives you.
 
 ### Option A — plugin (versioned, one command)
 
@@ -57,6 +60,29 @@ are dev-only and must not ship to end users.
 
 Either way, then run `/codeup` (or `/codeup:codeup`), or just ask Claude to
 "review this file for anti-patterns".
+
+## Automatic fix verification (plugin only)
+
+A fix for one anti-pattern can quietly introduce another (extract a long method
+→ a god-class helper; swallow an exception → error-swallowing). The skill
+already carries a **fix-and-verify loop** that holds a fix to the catalogue, but
+the **plugin** install adds a hook so it happens *automatically* — no setup.
+
+`hooks/hooks.json` registers a `PostToolUse` hook (`hooks/verify-fix.sh`) that,
+after Claude edits a source file, injects a reminder for Claude to re-check that
+change against the catalogue before moving on. It is deliberately quiet and
+dependency-free:
+
+- **Nudge only** — it injects guidance for the model; it never runs an LLM or
+  analyzer itself, needs no API key, and makes no network calls.
+- **Gated on `.codeup/`** — it stays silent in any project that doesn't have a
+  `.codeup/` directory, so it only acts where codeup is actually in use.
+- **No loops / no noise** — it ignores edits under `.codeup/` and non-source
+  files, and emits nothing (exit 0) when it has nothing to say.
+
+This ships **only via the plugin** — a plain skill directory copied into
+`.claude/skills/` cannot carry hooks. Plugin hooks activate when the plugin is
+enabled (project-scoped plugins require trusting the workspace first).
 
 **GitHub Copilot:** copy [`copilot/codeup.prompt.md`](copilot/codeup.prompt.md)
 into your repo's `.github/prompts/`. Invoke it from Copilot Chat.
