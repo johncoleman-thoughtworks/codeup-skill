@@ -11,8 +11,12 @@ description: >-
   scan, an anti-pattern audit, a design-quality or maintainability review, or a
   security-smell pass — and whenever they type `/codeup`, mention "codeup", or
   ask you to "review this code", "find anti-patterns", "check for code smells",
-  or "audit the design" of a file, directory, or the current selection. Reuses
-  THIS host's model — no API key, no separate install.
+  or "audit the design" of a file, directory, or the current selection. ALSO use
+  it whenever you are **fixing** Codeup findings or writing/changing code that
+  should clear the catalogue: it carries a self-verification loop so a fix can't
+  silently trade one anti-pattern for another — hold your own diff to the
+  catalogue before declaring a fix done. Reuses THIS host's model — no API key,
+  no separate install.
 ---
 
 # Codeup — architectural anti-pattern review
@@ -143,11 +147,52 @@ Before writing, check what's already in `.codeup/`:
 - Respect `.codeup/knowledge/dismissals.yaml` if present: don't re-report a
   pattern+location the team has already dismissed.
 
+## Fixing findings — and verifying your own fix
+
+When the user asks you to **fix** a finding (not just review), the catalogue is
+not only the detector — it's the bar your *fix* has to clear. The common failure
+mode is that a fix for one pattern quietly introduces another, so the diff trades
+one finding for a new one without anyone noticing. Don't let that happen.
+
+After you edit code to resolve a finding, before you call it done:
+
+1. **Re-read the changed region** (and its immediate neighbours if the change was
+   structural — a new class, a moved method, a new dependency).
+2. **Re-evaluate it against the catalogue**, asking two questions:
+   - *Is the original finding actually resolved* — not just relabelled or moved?
+   - *Did the change introduce a NEW catalogue pattern?* Judge the new code by the
+     same bar you'd judge anyone's, with no leniency because you wrote it.
+3. **If the fix introduced a new finding, iterate** (fix → re-verify), up to ~3
+   rounds. If you can't get it clean, **stop and surface the trade-off** to the
+   user rather than silently shipping a fix that swaps one smell for another.
+4. **Record it:** mark the resolved finding `status: fixed` with a `history`
+   entry (`event: status_changed`, `from: <prev>`, `to: fixed`); write any
+   genuinely new finding as its own file. Don't delete the fixed finding's file —
+   its history is the audit trail.
+
+Watch for these fix-introduces-a-new-smell traps specifically:
+
+- Extracting a long method → a `god-class` / `feature-envy` helper, or a
+  `procedural-shell-class` that just relocates the logic.
+- "Handling" an exception to silence a warning → `error-swallowing` (catch +
+  return null/false/empty).
+- Replacing a magic number with a flag or wrapper that's never reused →
+  `hardcoded-configuration` moved, not removed, or `primitive-obsession` →
+  `anemic-domain-model` (a wrapper type with no behaviour).
+- Adding an interface / generic / plug-point "to be safe" → `premature-abstraction`
+  or `speculative-generality`. The smallest change that resolves the finding is
+  usually the right one — don't over-engineer the fix.
+
+The whole point: a fix that introduces a fresh catalogue finding is not a fix.
+Hold your own diff to the catalogue before declaring victory.
+
 ## Scope guardrails
 
-- **Write only under `.codeup/`** in the workspace root. Never modify the
-  source files you're reviewing as part of this skill, and never write findings
-  outside `.codeup/`.
+- **Review mode writes only under `.codeup/`** — when *reviewing*, never modify
+  the source files, and never write findings outside `.codeup/`.
+- **Fix mode** (the user explicitly asked you to fix something) is the one case
+  you may edit source — but only the files needed for the fix, and you must run
+  the self-verification loop above before finishing.
 - Skip files over ~60 KB, binary files, and files with no applicable catalogue
   patterns — say so in your summary rather than forcing a finding.
 
