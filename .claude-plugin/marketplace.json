@@ -1,5 +1,6 @@
 {
   "name": "codeup-tools",
+  "description": "Codeup — architectural anti-pattern & code-security review skills that run on the host's own model.",
   "owner": {
     "name": "johncoleman-thoughtworks"
   },
